@@ -98,7 +98,7 @@ const spawnPlayer = (n, opts) => {
     spawn = playerSpawns.reduce(most(distToNearestPlayer))
   }
   const playerOpts = { number: n, colour: playerColours[n], inputs: inputs[n], spawnPlayer }
-  const player = new PlayerEntity(...spawn, 50, 50, Object.assign(Object.assign({}, playerOpts), opts))
+  const player = new PlayerEntity(...spawn, 50, 50, {...playerOpts, ...opts})
   entities.push(new BirthEntity(...spawn, 50, 50, { number: n, colour: player.getColour(), spawn: player, label: 'birth' }))
 }
 
