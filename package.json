@@ -1,0 +1,18 @@
+{
+  "name": "squish",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "tinycolor2": "^1.4.1"
+  },
+  "devDependencies": {
+    "parcel": "^0.0.1",
+    "gh-pages": "^1.1.0"
+  },
+  "scripts": {
+    "build": "parcel build index.html",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
+  }
+}
