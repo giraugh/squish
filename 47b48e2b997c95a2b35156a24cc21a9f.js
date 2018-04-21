@@ -2012,133 +2012,154 @@ class BirthEntity extends Entity {
 module.exports = BirthEntity
 
 },{"./entity":10,"./playerEntity":7,"tinycolor2":16,"./util":9}],3:[function(require,module,exports) {
-const PhysicsEntity = require('./physicsEntity')
-const PlayerEntity = require('./playerEntity')
-const BirthEntity = require('./birthEntity')
-const { least, most } = require('./util')
-let entities = []
+'use strict';
 
-const inputs = [
-  {
-    left: {
-      type: 'keyboard',
-      key: 'a'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'd'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 'w'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 's'
-    }
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var PhysicsEntity = require('./physicsEntity');
+var PlayerEntity = require('./playerEntity');
+var BirthEntity = require('./birthEntity');
+
+var _require = require('./util'),
+    least = _require.least,
+    most = _require.most;
+
+var entities = [];
+
+var inputs = [{
+  left: {
+    type: 'keyboard',
+    key: 'a'
   },
-  {
-    left: {
-      type: 'keyboard',
-      key: 'ArrowLeft'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'ArrowRight'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 'ArrowUp'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 'ArrowDown'
-    }
+  right: {
+    type: 'keyboard',
+    key: 'd'
   },
-  {
-    left: {
-      type: 'keyboard',
-      key: 'j'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'l'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 'i'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 'k'
-    }
+  jump: {
+    type: 'keyboard',
+    key: 'w'
   },
-  {
-    left: {
-      type: 'keyboard',
-      key: 'f'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'h'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 't'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 'g'
-    }
+  slam: {
+    type: 'keyboard',
+    key: 's'
   }
-]
+}, {
+  left: {
+    type: 'keyboard',
+    key: 'ArrowLeft'
+  },
+  right: {
+    type: 'keyboard',
+    key: 'ArrowRight'
+  },
+  jump: {
+    type: 'keyboard',
+    key: 'ArrowUp'
+  },
+  slam: {
+    type: 'keyboard',
+    key: 'ArrowDown'
+  }
+}, {
+  left: {
+    type: 'keyboard',
+    key: 'j'
+  },
+  right: {
+    type: 'keyboard',
+    key: 'l'
+  },
+  jump: {
+    type: 'keyboard',
+    key: 'i'
+  },
+  slam: {
+    type: 'keyboard',
+    key: 'k'
+  }
+}, {
+  left: {
+    type: 'keyboard',
+    key: 'f'
+  },
+  right: {
+    type: 'keyboard',
+    key: 'h'
+  },
+  jump: {
+    type: 'keyboard',
+    key: 't'
+  },
+  slam: {
+    type: 'keyboard',
+    key: 'g'
+  }
+}];
 
-const playerColours = ['#5468fe', '#fe4c55', '#ff9800', '#4caf50']
-const playerSpawns = [
-  [275, 290],
-  [675, 290],
-  [300, 490],
-  [650, 490],
-  [200, 60],
-  [700, 60]
-]
+var playerColours = ['#5468fe', '#fe4c55', '#ff9800', '#4caf50'];
+var playerSpawns = [[275, 290], [675, 290], [300, 490], [650, 490], [200, 60], [700, 60]];
 
-const spawnPlayer = (n, opts) => {
-  const players = entities.filter(e => e.isPlayer || e.label === 'birth')
-  let spawn = playerSpawns[Math.round(Math.random() * (playerSpawns.length - 1))]
+var spawnPlayer = function spawnPlayer(n, opts) {
+  var players = entities.filter(function (e) {
+    return e.isPlayer || e.label === 'birth';
+  });
+  var spawn = playerSpawns[Math.round(Math.random() * (playerSpawns.length - 1))];
   if (players.length) {
-    const dist = ([ax, ay]) => ({x: bx, y: by}) => Math.sqrt((bx - ax) ** 2 + (by - ay) ** 2)
-    const distToNearestPlayer = (spawn) => dist(spawn)(players.reduce(least(dist(spawn))))
-    spawn = playerSpawns.reduce(most(distToNearestPlayer))
+    var dist = function dist(_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          ax = _ref2[0],
+          ay = _ref2[1];
+
+      return function (_ref3) {
+        var bx = _ref3.x,
+            by = _ref3.y;
+        return Math.sqrt(Math.pow(bx - ax, 2) + Math.pow(by - ay, 2));
+      };
+    };
+    var distToNearestPlayer = function distToNearestPlayer(spawn) {
+      return dist(spawn)(players.reduce(least(dist(spawn))));
+    };
+    spawn = playerSpawns.reduce(most(distToNearestPlayer));
   }
-  const playerOpts = { number: n, colour: playerColours[n], inputs: inputs[n], spawnPlayer }
-  const player = new PlayerEntity(...spawn, 50, 50, Object.assign(Object.assign({}, playerOpts), opts))
-  entities.push(new BirthEntity(...spawn, 50, 50, { number: n, colour: player.getColour(), spawn: player, label: 'birth' }))
-}
+  var playerOpts = { number: n, colour: playerColours[n], inputs: inputs[n], spawnPlayer: spawnPlayer };
+  var player = new (Function.prototype.bind.apply(PlayerEntity, [null].concat(_toConsumableArray(spawn), [50, 50, _extends({}, playerOpts, opts)])))();
+  entities.push(new (Function.prototype.bind.apply(BirthEntity, [null].concat(_toConsumableArray(spawn), [50, 50, { number: n, colour: player.getColour(), spawn: player, label: 'birth' }])))());
+};
 
-spawnPlayer(0)
-spawnPlayer(1)
-spawnPlayer(2)
-spawnPlayer(3)
+spawnPlayer(0);
+spawnPlayer(1);
+spawnPlayer(2);
+spawnPlayer(3);
 
-entities.push(new PhysicsEntity(150, 600, 700, 60, { colour: '#313131', kinematic: true, label: 'obstacle' }))
-entities.push(new PhysicsEntity(200, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }))
-entities.push(new PhysicsEntity(600, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }))
+entities.push(new PhysicsEntity(150, 600, 700, 60, { colour: '#313131', kinematic: true, label: 'obstacle' }));
+entities.push(new PhysicsEntity(200, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }));
+entities.push(new PhysicsEntity(600, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }));
 
-const addEntity = entity => entities.push(entity)
+var addEntity = function addEntity(entity) {
+  return entities.push(entity);
+};
 
-const byDepth = (a, b) => b.depth - a.depth
+var byDepth = function byDepth(a, b) {
+  return b.depth - a.depth;
+};
 
-const main = ctx => {
-  entities.sort(byDepth).forEach(ent => {
-    ent.update(entities.filter(e => e !== ent), { addEntity })
-    ent.draw(ctx)
-  })
-  entities = entities.filter(e => !e.remove)
-}
+var main = function main(ctx) {
+  entities.sort(byDepth).forEach(function (ent) {
+    ent.update(entities.filter(function (e) {
+      return e !== ent;
+    }), { addEntity: addEntity });
+    ent.draw(ctx);
+  });
+  entities = entities.filter(function (e) {
+    return !e.remove;
+  });
+};
 
-module.exports = main
-
+module.exports = main;
 },{"./physicsEntity":6,"./playerEntity":7,"./birthEntity":8,"./util":9}],5:[function(require,module,exports) {
 const create = (width, height) => {
   const canvas = document.createElement('canvas')
