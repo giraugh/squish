@@ -1,83 +1,9 @@
 const PhysicsEntity = require('./physicsEntity')
 const PlayerEntity = require('./playerEntity')
 const BirthEntity = require('./birthEntity')
+const { inputs } = require('./input')
 const { least, most } = require('./util')
 let entities = []
-
-const inputs = [
-  {
-    left: {
-      type: 'keyboard',
-      key: 'a'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'd'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 'w'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 's'
-    }
-  },
-  {
-    left: {
-      type: 'keyboard',
-      key: 'ArrowLeft'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'ArrowRight'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 'ArrowUp'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 'ArrowDown'
-    }
-  },
-  {
-    left: {
-      type: 'keyboard',
-      key: 'j'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'l'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 'i'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 'k'
-    }
-  },
-  {
-    left: {
-      type: 'keyboard',
-      key: 'f'
-    },
-    right: {
-      type: 'keyboard',
-      key: 'h'
-    },
-    jump: {
-      type: 'keyboard',
-      key: 't'
-    },
-    slam: {
-      type: 'keyboard',
-      key: 'g'
-    }
-  }
-]
 
 const playerColours = ['#5468fe', '#fe4c55', '#ff9800', '#4caf50']
 const playerSpawns = [
@@ -103,9 +29,9 @@ const spawnPlayer = (n, opts) => {
 }
 
 spawnPlayer(0)
-spawnPlayer(1)
-spawnPlayer(2)
-spawnPlayer(3)
+// spawnPlayer(1)
+// spawnPlayer(2)
+// spawnPlayer(3)
 
 entities.push(new PhysicsEntity(150, 600, 700, 60, { colour: '#313131', kinematic: true, label: 'obstacle' }))
 entities.push(new PhysicsEntity(200, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }))

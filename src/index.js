@@ -1,7 +1,7 @@
 const size = [1000, 800]
 const main = require('./main')
 const context = require('./canvas')(size[0], size[1])
-require('./input')()
+require('./input').setup()
 let backgroundColour = '#FFF'
 
 window.size = size

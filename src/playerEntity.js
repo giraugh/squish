@@ -5,24 +5,9 @@ const CorpseEntity = require('./corpseEntity')
 const botBrain = require('./botBrain')
 const tc = require('tinycolor2')
 const { lerp } = require('./util')
+const { isDown, isPressed } = require('./input')
 
 const particleNum = 30
-
-const isDown = (inputs, input) => {
-  let i = inputs[input]
-  if (i.type === 'keyboard') {
-    return (window.keys[i.key] || 0) > 0
-  }
-}
-
-const isPressed = (inputs, input) => {
-  let i = inputs[input]
-  if (i.type === 'keyboard') {
-    let r = window.keys[i.key] || 0
-    if (r > 0) { window.keys[i.key] = 1 }
-    return r === 2
-  }
-}
 
 class PlayerEntity extends PhysicsEntity {
   constructor (_x, _y, _w, _h, opts = {}) {
