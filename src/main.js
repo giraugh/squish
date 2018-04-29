@@ -29,9 +29,9 @@ const spawnPlayer = (n, opts) => {
 }
 
 spawnPlayer(0)
-// spawnPlayer(1)
-// spawnPlayer(2)
-// spawnPlayer(3)
+spawnPlayer(1)
+spawnPlayer(2)
+spawnPlayer(3)
 
 entities.push(new PhysicsEntity(150, 600, 700, 60, { colour: '#313131', kinematic: true, label: 'obstacle' }))
 entities.push(new PhysicsEntity(200, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }))
