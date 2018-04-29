@@ -70,145 +70,223 @@ require = (function (modules, cache, entry) {
   // Override the current require with this new one
   return newRequire;
 })({10:[function(require,module,exports) {
-class Entity {
-  constructor (_x, _y, _w, _h, { colour: _col = 'black', label: _lab = 'none' } = {}) {
-    this.x = _x
-    this.y = _y
-    this.w = _w
-    this.h = _h
-    this.colour = _col
-    this.label = _lab
-    this.remove = false
-    this.depth = 0
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Entity = function () {
+  function Entity(_x, _y, _w, _h) {
+    var _ref = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {},
+        _ref$colour = _ref.colour,
+        _col = _ref$colour === undefined ? 'black' : _ref$colour,
+        _ref$label = _ref.label,
+        _lab = _ref$label === undefined ? 'none' : _ref$label;
+
+    _classCallCheck(this, Entity);
+
+    this.x = _x;
+    this.y = _y;
+    this.w = _w;
+    this.h = _h;
+    this.colour = _col;
+    this.label = _lab;
+    this.remove = false;
+    this.depth = 0;
   }
 
-  update (entities) {}
+  _createClass(Entity, [{
+    key: 'update',
+    value: function update(entities) {}
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      ctx.fillStyle = this.colour;
+      ctx.fillRect(this.x, this.y, this.w, this.h);
+    }
+  }]);
 
-  draw (ctx) {
-    ctx.fillStyle = this.colour
-    ctx.fillRect(this.x, this.y, this.w, this.h)
-  }
-}
+  return Entity;
+}();
 
-module.exports = Entity
+module.exports = Entity;
+},{}],8:[function(require,module,exports) {
+"use strict";
 
-},{}],9:[function(require,module,exports) {
-const rectangleObjectsOverlap = ({x: ax, y: ay, w: aw, h: ah}, {x: bx, y: by, w: bw, h: bh}) =>
-  rectanglesOverlap(ax, ay, aw, ah, bx, by, bw, bh)
+var rectangleObjectsOverlap = function rectangleObjectsOverlap(_ref, _ref2) {
+  var ax = _ref.x,
+      ay = _ref.y,
+      aw = _ref.w,
+      ah = _ref.h;
+  var bx = _ref2.x,
+      by = _ref2.y,
+      bw = _ref2.w,
+      bh = _ref2.h;
+  return rectanglesOverlap(ax, ay, aw, ah, bx, by, bw, bh);
+};
 
-const rectanglesOverlap = (ax, ay, aw, ah, bx, by, bw, bh) =>
-  (ax <= (bx + bw) &&
-   bx <= (ax + aw) &&
-   ay <= (by + bh) &&
-   by <= (ay + ah))
+var rectanglesOverlap = function rectanglesOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+  return ax <= bx + bw && bx <= ax + aw && ay <= by + bh && by <= ay + ah;
+};
 
-const lerp = (a, b, t) =>
-  a + ((b - a) * t)
+var lerp = function lerp(a, b, t) {
+  return a + (b - a) * t;
+};
 
-const least = f => (acc, val) => f(val) < f(acc) ? val : acc
-const most = f => (acc, val) => f(val) > f(acc) ? val : acc
+var least = function least(f) {
+  return function (acc, val) {
+    return f(val) < f(acc) ? val : acc;
+  };
+};
+var most = function most(f) {
+  return function (acc, val) {
+    return f(val) > f(acc) ? val : acc;
+  };
+};
 
 module.exports = {
-  rectanglesOverlap,
-  rectangleObjectsOverlap,
-  lerp,
-  least,
-  most
-}
+  rectanglesOverlap: rectanglesOverlap,
+  rectangleObjectsOverlap: rectangleObjectsOverlap,
+  lerp: lerp,
+  least: least,
+  most: most
+};
+},{}],9:[function(require,module,exports) {
+'use strict';
 
-},{}],6:[function(require,module,exports) {
-const Entity = require('./entity')
-const { rectanglesOverlap } = require('./util')
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-const wouldCollide = (me, them, xd, yd) => {
-  let {x: ax, y: ay, w: aw, h: ah} = me
-  let {x: bx, y: by, w: bw, h: bh} = them
-  return rectanglesOverlap(ax + xd, ay + yd, aw, ah, bx, by, bw, bh)
-}
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-const willCollide = (entities, me, xd, yd) =>
-  entities.some(e => wouldCollide(me, e, xd, yd))
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-class PhysicsEntity extends Entity {
-  constructor (_x, _y, _w, _h, _opts = {}) {
-    super(_x, _y, _w, _h, _opts)
-    const {
-      gravity: _grav = 0.5,
-      kinematic: _kin = false,
-      ethereal: _ether = false,
-      dontCollide: _dc = false
-    } = _opts
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-    this.gravity = _grav
-    this.kinematic = _kin
-    this.ethereal = _ether
-    this.dontCollide = _dc
-    this.vx = 0
-    this.vy = 0
+var Entity = require('./entity');
+
+var _require = require('./util'),
+    rectanglesOverlap = _require.rectanglesOverlap;
+
+var wouldCollide = function wouldCollide(me, them, xd, yd) {
+  var ax = me.x,
+      ay = me.y,
+      aw = me.w,
+      ah = me.h;
+  var bx = them.x,
+      by = them.y,
+      bw = them.w,
+      bh = them.h;
+
+  return rectanglesOverlap(ax + xd, ay + yd, aw, ah, bx, by, bw, bh);
+};
+
+var willCollide = function willCollide(entities, me, xd, yd) {
+  return entities.some(function (e) {
+    return wouldCollide(me, e, xd, yd);
+  });
+};
+
+var PhysicsEntity = function (_Entity) {
+  _inherits(PhysicsEntity, _Entity);
+
+  function PhysicsEntity(_x, _y, _w, _h) {
+    var _opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+
+    _classCallCheck(this, PhysicsEntity);
+
+    var _this = _possibleConstructorReturn(this, (PhysicsEntity.__proto__ || Object.getPrototypeOf(PhysicsEntity)).call(this, _x, _y, _w, _h, _opts));
+
+    var _opts$gravity = _opts.gravity,
+        _grav = _opts$gravity === undefined ? 0.5 : _opts$gravity,
+        _opts$kinematic = _opts.kinematic,
+        _kin = _opts$kinematic === undefined ? false : _opts$kinematic,
+        _opts$ethereal = _opts.ethereal,
+        _ether = _opts$ethereal === undefined ? false : _opts$ethereal,
+        _opts$dontCollide = _opts.dontCollide,
+        _dc = _opts$dontCollide === undefined ? false : _opts$dontCollide;
+
+    _this.gravity = _grav;
+    _this.kinematic = _kin;
+    _this.ethereal = _ether;
+    _this.dontCollide = _dc;
+    _this.vx = 0;
+    _this.vy = 0;
+    return _this;
   }
 
-  willIntersect (entities, dx, dy) {
-    // Only collide with 'real' entities
-    let colliders = entities.filter(e => !(e.ethereal || false))
+  _createClass(PhysicsEntity, [{
+    key: 'willIntersect',
+    value: function willIntersect(entities, dx, dy) {
+      // Only collide with 'real' entities
+      var colliders = entities.filter(function (e) {
+        return !(e.ethereal || false);
+      });
 
-    // Return result
-    return willCollide(colliders, this, dx, dy)
-  }
-
-  willIntersectWith (entity, dx, dy) {
-    return wouldCollide(this, entity, dx, dy)
-  }
-
-  update (entities) {
-    // Accelerate due to Gravity
-    if (!(this.kinematic || false)) {
-      this.vy += this.gravity
+      // Return result
+      return willCollide(colliders, this, dx, dy);
     }
-
-    // Only collide with 'real' entities
-    let colliders = entities.filter(e => !(e.ethereal || false))
-
-    // If dont collide then just displace and be done with it
-    if (this.dontCollide) {
-      this.x += this.vx
-      this.y += this.vy
-      return
+  }, {
+    key: 'willIntersectWith',
+    value: function willIntersectWith(entity, dx, dy) {
+      return wouldCollide(this, entity, dx, dy);
     }
-
-    // No need to check displacement if kinematic
-    if (this.kinematic) {
-      return
-    }
-
-    // Horizontal Displacement
-    if (!willCollide(colliders, this, this.vx, 0)) {
-      this.x += this.vx
-    } else {
-      let a = 0
-      while (!willCollide(colliders, this, Math.sign(this.vx), 0) && a < 100) {
-        a++
-        this.x += Math.sign(this.vx)
+  }, {
+    key: 'update',
+    value: function update(entities) {
+      // Accelerate due to Gravity
+      if (!(this.kinematic || false)) {
+        this.vy += this.gravity;
       }
-      this.vx = 0
-    }
 
-    // Vertical Displacement
-    if (!willCollide(colliders, this, 0, this.vy)) {
-      this.y += this.vy
-    } else {
-      let a = 0
-      while (!willCollide(colliders, this, 0, Math.sign(this.vy)) && a < 100) {
-        a++
-        this.y += Math.sign(this.vy)
+      // Only collide with 'real' entities
+      var colliders = entities.filter(function (e) {
+        return !(e.ethereal || false);
+      });
+
+      // If dont collide then just displace and be done with it
+      if (this.dontCollide) {
+        this.x += this.vx;
+        this.y += this.vy;
+        return;
       }
-      this.vy = 0
+
+      // No need to check displacement if kinematic
+      if (this.kinematic) {
+        return;
+      }
+
+      // Horizontal Displacement
+      if (!willCollide(colliders, this, this.vx, 0)) {
+        this.x += this.vx;
+      } else {
+        var a = 0;
+        while (!willCollide(colliders, this, Math.sign(this.vx), 0) && a < 100) {
+          a++;
+          this.x += Math.sign(this.vx);
+        }
+        this.vx = 0;
+      }
+
+      // Vertical Displacement
+      if (!willCollide(colliders, this, 0, this.vy)) {
+        this.y += this.vy;
+      } else {
+        var _a = 0;
+        while (!willCollide(colliders, this, 0, Math.sign(this.vy)) && _a < 100) {
+          _a++;
+          this.y += Math.sign(this.vy);
+        }
+        this.vy = 0;
+      }
     }
-  }
-}
+  }]);
 
-module.exports = PhysicsEntity
+  return PhysicsEntity;
+}(Entity);
 
-},{"./entity":10,"./util":9}],16:[function(require,module,exports) {
+module.exports = PhysicsEntity;
+},{"./entity":10,"./util":8}],16:[function(require,module,exports) {
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -1406,255 +1484,382 @@ else {
 })(Math);
 
 },{}],15:[function(require,module,exports) {
-const Entity = require('./entity')
-const tc = require('tinycolor2')
+'use strict';
 
-class SplatterEntity extends Entity {
-  constructor (...args) {
-    super(...args)
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Entity = require('./entity');
+var tc = require('tinycolor2');
+
+var SplatterEntity = function (_Entity) {
+  _inherits(SplatterEntity, _Entity);
+
+  function SplatterEntity() {
+    var _ref;
+
+    _classCallCheck(this, SplatterEntity);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
     // fade out
-    this.alpha = 1
-    this.time = -30
-    this.fadeTime = 30
-    this.depth = -0.5
+    var _this = _possibleConstructorReturn(this, (_ref = SplatterEntity.__proto__ || Object.getPrototypeOf(SplatterEntity)).call.apply(_ref, [this].concat(args)));
 
-    this.ethereal = true
+    _this.alpha = 1;
+    _this.time = -30;
+    _this.fadeTime = 30;
+    _this.depth = -0.5;
+
+    _this.ethereal = true;
+    return _this;
   }
 
-  update (entities) {
-    // Keep track of time and calculate alpha
-    this.time++
-    this.alpha = 1 - (this.time / this.fadeTime)
+  _createClass(SplatterEntity, [{
+    key: 'update',
+    value: function update(entities) {
+      // Keep track of time and calculate alpha
+      this.time++;
+      this.alpha = 1 - this.time / this.fadeTime;
 
-    // die when timer up
-    if (this.time >= this.fadeTime) {
-      this.remove = true
+      // die when timer up
+      if (this.time >= this.fadeTime) {
+        this.remove = true;
+      }
+
+      // Call super
+      _get(SplatterEntity.prototype.__proto__ || Object.getPrototypeOf(SplatterEntity.prototype), 'update', this).call(this, entities);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      // Only draw-atop existing
+      ctx.globalCompositeOperation = 'lighten';
+
+      // Manipulate colour with alpha
+      var c = tc(this.colour);
+      c.setAlpha(this.alpha);
+      ctx.fillStyle = c.toRgbString();
+
+      // Draw us
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, 15, 0, Math.PI * 2);
+      ctx.fill();
+      // ctx.drawImage(splatterImg, this.x, this.y)
+
+      // reset operation
+      ctx.globalCompositeOperation = 'source-over';
+    }
+  }]);
+
+  return SplatterEntity;
+}(Entity);
+
+module.exports = SplatterEntity;
+},{"./entity":10,"tinycolor2":16}],13:[function(require,module,exports) {
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PhysicsEntity = require('./physicsEntity');
+var SplatterEntity = require('./splatterEntity');
+var force = 25;
+
+var ParticleEntity = function (_PhysicsEntity) {
+  _inherits(ParticleEntity, _PhysicsEntity);
+
+  function ParticleEntity(_x, _y, _r) {
+    var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
+    _classCallCheck(this, ParticleEntity);
+
+    var _this = _possibleConstructorReturn(this, (ParticleEntity.__proto__ || Object.getPrototypeOf(ParticleEntity)).call(this, _x, _y, 0, 0, opts));
+
+    _this.radius = _r;
+    _this.dontCollide = true;
+    _this.ethereal = true;
+    _this.vx = Math.random() * force - force / 2;
+    _this.vy = -Math.abs(Math.random() * force - force / 2);
+    _this.depth = -1.5;
+    return _this;
+  }
+
+  _createClass(ParticleEntity, [{
+    key: 'update',
+    value: function update(entities, _ref) {
+      var addEntity = _ref.addEntity;
+
+      // Only collide with obstacle entities
+      var obstacles = entities.filter(function (e) {
+        return e.label === 'obstacle';
+      });
+      if (this.willIntersect(obstacles, this.vx, this.vy) || this.willIntersect(obstacles, 0, 0)) {
+        // Remove me
+        this.remove = true;
+
+        // Create Splat effect
+        addEntity(new SplatterEntity(this.x, this.y, 0, 0, { colour: this.colour }));
+      }
+
+      // Remove when outside of level
+      if (this.x < 0 || this.x > window.size[0] || this.y < 0 || this.y > window.size[1]) {
+        this.remove = true;
+      }
+
+      // Update like normal, (basically just move)
+      _get(ParticleEntity.prototype.__proto__ || Object.getPrototypeOf(ParticleEntity.prototype), 'update', this).call(this, entities);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      ctx.fillStyle = this.colour;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }]);
+
+  return ParticleEntity;
+}(PhysicsEntity);
+
+module.exports = ParticleEntity;
+},{"./physicsEntity":9,"./splatterEntity":15}],11:[function(require,module,exports) {
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Entity = require('./entity.js');
+
+var ScoreParticleEntity = function (_Entity) {
+  _inherits(ScoreParticleEntity, _Entity);
+
+  function ScoreParticleEntity() {
+    var _ref;
+
+    _classCallCheck(this, ScoreParticleEntity);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
     }
 
-    // Call super
-    super.update(entities)
-  }
-
-  draw (ctx) {
-    // Only draw-atop existing
-    ctx.globalCompositeOperation = 'lighten'
-
-    // Manipulate colour with alpha
-    let c = tc(this.colour)
-    c.setAlpha(this.alpha)
-    ctx.fillStyle = c.toRgbString()
-
-    // Draw us
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, 15, 0, Math.PI * 2)
-    ctx.fill()
-    // ctx.drawImage(splatterImg, this.x, this.y)
-
-    // reset operation
-    ctx.globalCompositeOperation = 'source-over'
-  }
-}
-
-module.exports = SplatterEntity
-
-},{"./entity":10,"tinycolor2":16}],11:[function(require,module,exports) {
-const PhysicsEntity = require('./physicsEntity')
-const SplatterEntity = require('./splatterEntity')
-const force = 25
-
-class ParticleEntity extends PhysicsEntity {
-  constructor (_x, _y, _r, opts = {}) {
-    super(_x, _y, 0, 0, opts)
-    this.radius = _r
-    this.dontCollide = true
-    this.ethereal = true
-    this.vx = (Math.random() * force) - (force / 2)
-    this.vy = -Math.abs((Math.random() * force) - (force / 2))
-    this.depth = -1.5
-  }
-
-  update (entities, { addEntity }) {
-    // Only collide with obstacle entities
-    let obstacles = entities.filter(e => e.label === 'obstacle')
-    if (this.willIntersect(obstacles, this.vx, this.vy) || this.willIntersect(obstacles, 0, 0)) {
-      // Remove me
-      this.remove = true
-
-      // Create Splat effect
-      addEntity(new SplatterEntity(this.x, this.y, 0, 0, { colour: this.colour }))
-    }
-
-    // Remove when outside of level
-    if (this.x < 0 || this.x > window.size[0] || this.y < 0 || this.y > window.size[1]) {
-      this.remove = true
-    }
-
-    // Update like normal, (basically just move)
-    super.update(entities)
-  }
-
-  draw (ctx) {
-    ctx.fillStyle = this.colour
-    ctx.beginPath()
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
-    ctx.fill()
-  }
-}
-
-module.exports = ParticleEntity
-
-},{"./physicsEntity":6,"./splatterEntity":15}],12:[function(require,module,exports) {
-const Entity = require('./entity.js')
-
-class ScoreParticleEntity extends Entity {
-  constructor (...args) {
+    var _this = _possibleConstructorReturn(this, (_ref = ScoreParticleEntity.__proto__ || Object.getPrototypeOf(ScoreParticleEntity)).call.apply(_ref, [this].concat(args)));
     // Call Super and get opts
-    super(...args)
-    let opts = args[4]
+
+
+    var opts = args[4];
 
     // Get options
-    let {
-      number: _num = 1,
-      range: _rng = 50
-    } = opts
 
-    this.number = _num
-    this.range = _rng
-    this.ethereal = true
-    this.fadeTime = 15
-    this.fade = this.fadeTime + 50
-    this.ease = Math.random() * 0.4 + 0.1
-    this.depth = -4
+    var _opts$number = opts.number,
+        _num = _opts$number === undefined ? 1 : _opts$number,
+        _opts$range = opts.range,
+        _rng = _opts$range === undefined ? 50 : _opts$range;
+
+    _this.number = _num;
+    _this.range = _rng;
+    _this.ethereal = true;
+    _this.fadeTime = 15;
+    _this.fade = _this.fadeTime + 50;
+    _this.ease = Math.random() * 0.4 + 0.1;
+    _this.depth = -4;
+    return _this;
   }
 
-  update (entities) {
-    // Fade out
-    this.fade--
-    if (this.fade < 0) {
-      this.remove = true
-    }
-
-    /* // Find Player
-    const player = entities.find(e => e.isPlayer && e.colour === this.colour)
-    if (player) {
-      // Find Distance to player from us
-      const dist = Math.sqrt((player.x - this.x) ** 2 + (player.y - this.y) ** 2)
-
-      // If outside of range, snap to edge of range
-      if (dist > this.range) {
-        const dir = Math.atan2(this.y - player.y, this.x - player.x)
-        const x = player.x + Math.cos(dir) * this.range
-        const y = player.y + Math.sin(dir) * this.range
-        this.x = lerp(this.x, x, this.ease)
-        this.y = lerp(this.y, y, this.ease)
+  _createClass(ScoreParticleEntity, [{
+    key: 'update',
+    value: function update(entities) {
+      // Fade out
+      this.fade--;
+      if (this.fade < 0) {
+        this.remove = true;
       }
-    } */
-  }
 
-  draw (ctx) {
-    // Draw circle for now
-    ctx.fillStyle = this.colour
-    ctx.globalAlpha = Math.max(0, this.fade / this.fadeTime)
-    // ctx.beginPath()
-    // ctx.arc(this.x, this.y, 15, 0, Math.PI * 2)
-    // ctx.fill()
-    ctx.font = '40px "Lato"'
-    ctx.fillText(this.number, this.x, this.y)
-    ctx.globalAlpha = 1
-  }
-}
+      /* // Find Player
+      const player = entities.find(e => e.isPlayer && e.colour === this.colour)
+      if (player) {
+        // Find Distance to player from us
+        const dist = Math.sqrt((player.x - this.x) ** 2 + (player.y - this.y) ** 2)
+         // If outside of range, snap to edge of range
+        if (dist > this.range) {
+          const dir = Math.atan2(this.y - player.y, this.x - player.x)
+          const x = player.x + Math.cos(dir) * this.range
+          const y = player.y + Math.sin(dir) * this.range
+          this.x = lerp(this.x, x, this.ease)
+          this.y = lerp(this.y, y, this.ease)
+        }
+      } */
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      // Draw circle for now
+      ctx.fillStyle = this.colour;
+      ctx.globalAlpha = Math.max(0, this.fade / this.fadeTime);
+      // ctx.beginPath()
+      // ctx.arc(this.x, this.y, 15, 0, Math.PI * 2)
+      // ctx.fill()
+      ctx.font = '40px "Lato"';
+      ctx.fillText(this.number, this.x, this.y);
+      ctx.globalAlpha = 1;
+    }
+  }]);
 
-module.exports = ScoreParticleEntity
+  return ScoreParticleEntity;
+}(Entity);
 
-},{"./entity.js":10}],13:[function(require,module,exports) {
-const Entity = require('./entity')
-const tc = require('tinycolor2')
-const { lerp } = require('./util')
+module.exports = ScoreParticleEntity;
+},{"./entity.js":10}],12:[function(require,module,exports) {
+'use strict';
 
-const interp = x => Math.max(0, (0.5 * x) + Math.pow(1.8 * x - 1, 3))
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-class CorpseEntity extends Entity {
-  constructor (...args) {
-    // Has the same constructor signature
-    super(...args)
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Entity = require('./entity');
+var tc = require('tinycolor2');
+
+var _require = require('./util'),
+    lerp = _require.lerp;
+
+var interp = function interp(x) {
+  return Math.max(0, 0.5 * x + Math.pow(1.8 * x - 1, 3));
+};
+
+var CorpseEntity = function (_Entity) {
+  _inherits(CorpseEntity, _Entity);
+
+  function CorpseEntity() {
+    var _ref;
+
+    _classCallCheck(this, CorpseEntity);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
     // fade out
-    this.alpha = 1
-    this.time = 0
-    this.fadeTime = 20
+    var _this = _possibleConstructorReturn(this, (_ref = CorpseEntity.__proto__ || Object.getPrototypeOf(CorpseEntity)).call.apply(_ref, [this].concat(args)));
+    // Has the same constructor signature
+
+
+    _this.alpha = 1;
+    _this.time = 0;
+    _this.fadeTime = 20;
 
     // no physics
-    this.ethereal = true
+    _this.ethereal = true;
+    return _this;
   }
 
-  update (entities) {
-    // Keep track of time and calculate alpha
-    this.time++
-    this.alpha = 1 - (this.time / this.fadeTime)
+  _createClass(CorpseEntity, [{
+    key: 'update',
+    value: function update(entities) {
+      // Keep track of time and calculate alpha
+      this.time++;
+      this.alpha = 1 - this.time / this.fadeTime;
 
-    // die when timer up
-    if (this.time >= this.fadeTime) {
-      this.remove = true
+      // die when timer up
+      if (this.time >= this.fadeTime) {
+        this.remove = true;
+      }
+
+      // Call super
+      _get(CorpseEntity.prototype.__proto__ || Object.getPrototypeOf(CorpseEntity.prototype), 'update', this).call(this, entities);
     }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      // Manipulate colour with alpha
+      var a = interp(this.alpha);
+      var c = tc(this.colour);
+      c.setAlpha(a);
+      ctx.fillStyle = c.toRgbString();
 
-    // Call super
-    super.update(entities)
-  }
+      // Calculate pos and size for squish effect
+      var w = this.w;
+      var h = lerp(this.h, 0, 1 - a);
+      var x = this.x + this.w / 2;
+      var y = this.y;
 
-  draw (ctx) {
-    // Manipulate colour with alpha
-    let a = interp(this.alpha)
-    let c = tc(this.colour)
-    c.setAlpha(a)
-    ctx.fillStyle = c.toRgbString()
+      // Draw us
+      ctx.fillRect(x - w / 2, y + (this.h - h), w, h);
+    }
+  }]);
 
-    // Calculate pos and size for squish effect
-    let w = this.w
-    let h = lerp(this.h, 0, 1 - a)
-    let x = this.x + this.w / 2
-    let y = this.y
+  return CorpseEntity;
+}(Entity);
 
-    // Draw us
-    ctx.fillRect(x - w / 2, y + (this.h - h), w, h)
-  }
-}
+module.exports = CorpseEntity;
+},{"./entity":10,"tinycolor2":16,"./util":8}],14:[function(require,module,exports) {
+'use strict';
 
-module.exports = CorpseEntity
+var _require = require('./util'),
+    least = _require.least;
 
-},{"./entity":10,"tinycolor2":16,"./util":9}],14:[function(require,module,exports) {
-const { least } = require('./util')
+function botBrain(players) {
+  var _this = this;
 
-function botBrain (players) {
-  const closestPlayer = players.reduce(least(p => Math.sqrt((p.x - this.x) ** 2 + (p.y - this.y) ** 2)))
+  var closestPlayer = players.reduce(least(function (p) {
+    return Math.sqrt(Math.pow(p.x - _this.x, 2) + Math.pow(p.y - _this.y, 2));
+  }));
 
-  let hInp = 0
-  let jInp = 0
-  let dInp = 0
+  var hInp = 0;
+  var jInp = 0;
+  var dInp = 0;
 
   // Semirandom jumping
-  if ((Math.random() < 0.05 || (this.bouncy && Math.random() < 0.3)) && (this.onGround || this.vy > 2)) {
-    jInp = 1
+  if ((Math.random() < 0.05 || this.bouncy && Math.random() < 0.3) && (this.onGround || this.vy > 2)) {
+    jInp = 1;
   }
 
   // Moving
   if (Math.random() < 0.8) {
     if (closestPlayer.y < this.y) {
       // Above me, watch out the way
-      let dirToClosest = Math.sign(closestPlayer.x - this.x)
-      hInp = -dirToClosest
+      var dirToClosest = Math.sign(closestPlayer.x - this.x);
+      hInp = -dirToClosest;
     } else {
       // Im above them, get them!
-      let dirToClosest = Math.sign(closestPlayer.x - this.x)
-      hInp = dirToClosest
+      var _dirToClosest = Math.sign(closestPlayer.x - this.x);
+      hInp = _dirToClosest;
     }
   }
 
   // Ground Pound
   if (!this.onGround) {
-    if (players.find(p => Math.abs(p.x - this.x) < 40 && p.y > this.y)) {
-      dInp = 1
-      jInp = 0
+    if (players.find(function (p) {
+      return Math.abs(p.x - _this.x) < 40 && p.y > _this.y;
+    })) {
+      dInp = 1;
+      jInp = 0;
     }
   }
 
@@ -1663,390 +1868,209 @@ function botBrain (players) {
     if (this.y < 600) {
       if (!this.isStupid) {
         // Above lowest platform
-        let dirToCenter = Math.sign(450 - this.x)
-        hInp = dirToCenter
+        var dirToCenter = Math.sign(450 - this.x);
+        hInp = dirToCenter;
       }
     } else {
-      hInp = 0
-      jInp = 1
+      hInp = 0;
+      jInp = 1;
     }
   }
 
   return {
     hInp: hInp * 0.75,
-    jInp,
-    dInp
-  }
+    jInp: jInp,
+    dInp: dInp
+  };
 }
 
-module.exports = botBrain
-
-},{"./util":9}],7:[function(require,module,exports) {
-const PhysicsEntity = require('./physicsEntity')
-const ParticleEntity = require('./particleEntity')
-const ScoreParticleEntity = require('./scoreParticleEntity')
-const CorpseEntity = require('./corpseEntity')
-const botBrain = require('./botBrain')
-const tc = require('tinycolor2')
-const { lerp } = require('./util')
-
-const particleNum = 30
-
-const isDown = (inputs, input) => {
-  let i = inputs[input]
-  if (i.type === 'keyboard') {
-    return (window.keys[i.key] || 0) > 0
-  }
-}
-
-const isPressed = (inputs, input) => {
-  let i = inputs[input]
-  if (i.type === 'keyboard') {
-    let r = window.keys[i.key] || 0
-    if (r > 0) { window.keys[i.key] = 1 }
-    return r === 2
-  }
-}
-
-class PlayerEntity extends PhysicsEntity {
-  constructor (_x, _y, _w, _h, opts = {}) {
-    super(_x, _y, _w, _h, opts)
-    const {
-      inputs: _inps,
-      speed: _hspd = 2.3,
-      jumpHeight: _jmph = 14,
-      slamHeight: _slmh = 3,
-      verticalFriction: _vfric = 0.01,
-      horizontalFriction: _hfric = 0.2,
-      spawnPlayer: _spwnp,
-      number: _n,
-      kills: _klls = 0,
-      isBot: _isbt = true
-    } = opts
-    this.inputs = _inps
-    this.hSpd = _hspd
-    this.jmpHght = _jmph
-    this.slmHght = _slmh
-    this.hFric = _hfric
-    this.vFric = _vfric
-    this.jumps = 1
-    this.jumpsMax = 2
-    this.isPlayer = true
-    this.spawnPlayer = _spwnp
-    this.number = _n
-    this.stretch = 1
-    this.squeeze = 1
-    this.depth = -1
-    this.kills = _klls
-
-    // Bot Stuff
-    this.timeSinceLastInput = 0
-    this.becomeBotTimeout = 450
-    this.isBot = _isbt
-    this.onGround = false
-    this.isStupid = Math.random() < 0.3
-    this.bouncy = Math.random() < 0.2
-  }
-
-  die (addEntity) {
-    // Remove Player
-    this.remove = true
-
-    // Spawn Corpse
-    addEntity(new CorpseEntity(this.x, this.y, this.w, this.h, { colour: this.getColour() }))
-
-    // Spawn particles
-    for (let i = 0; i < particleNum; i++) {
-      let x = this.x + this.w / 2
-      let y = this.y + this.h / 2
-      let particle = new ParticleEntity(x, y, 7, { colour: this.getColour() })
-      addEntity(particle)
-    }
-
-    // Spawn new player
-    this.spawnPlayer(this.number, { isBot: this.isBot, kills: this.kills })
-  }
-
-  getInput (entities) {
-    const hInp = +isDown(this.inputs, 'right') - +isDown(this.inputs, 'left')
-    const jInp = isPressed(this.inputs, 'jump')
-    const dInp = isDown(this.inputs, 'slam')
-
-    if (hInp === 0 && !jInp && !dInp) {
-      this.timeSinceLastInput += 1
-      if (this.timeSinceLastInput > this.becomeBotTimeout) {
-        this.isBot = true
-        this.timeSinceLastInput = 0
-      }
-    } else {
-      this.timeSinceLastInput = 0
-      this.isBot = false
-    }
-
-    if (!this.isBot) {
-      return {
-        hInp,
-        jInp,
-        dInp
-      }
-    } else {
-      // Get players
-      const players = entities.filter(e => e.isPlayer && e !== this && !e.remove)
-
-      // Are there any?
-      if (players.length === 0) {
-        return { hInp: 0, jInp: 0, dInp: 0 }
-      }
-
-      // Use botbrain
-      return botBrain.bind(this)(players)
-    }
-  }
-
-  update (entities, { addEntity }) {
-    // Get player input
-    const {
-      hInp,
-      jInp,
-      dInp
-    } = this.getInput(entities)
-
-    // Slight Dash
-    if (Math.sign(this.vx) !== hInp && hInp === 0) {
-      this.vx += hInp * this.hSpd * 2.4
-    }
-
-    // Horizontal Movement
-    this.vx += hInp * this.hSpd
-
-    // Apply friction (damping)
-    this.vx = lerp(this.vx, 0, this.hFric)
-    this.vy = lerp(this.vy, 0, this.vFric)
-
-    // Jumping
-    if (this.jumps > 1 && jInp) {
-      if (this.vy > 0) {
-        this.vy = -this.jmpHght * 0.75
-      } else {
-        if (this.vy === 0) {
-          this.vy -= this.jmpHght
-        } else {
-          this.vy -= this.jmpHght * 0.7
-        }
-      }
-      this.jumps--
-      this.stretch = 0.7
-      this.squeeze = 1.3
-    }
-
-    // Reset stretch and squeeze
-    this.stretch = lerp(this.stretch, 1, 0.1)
-    this.squeeze = lerp(this.squeeze, 1, 0.1)
-
-    // Slamming
-    if (dInp) {
-      this.vy += this.slmHght
-    }
-
-    // Regain jumps & make splats
-    if (this.willIntersect(entities, 0, 1)) {
-      /*
-      // Create Splats
-      let x = this.x + this.w / 2
-      let y = this.y + this.h
-      let splatter = new SplatterEntity(x, y, 0, 0, { colour: this.colour })
-      addEntity(splatter)
-      */
-
-      // Squishing and stuff
-      if (dInp) {
-        this.stretch = lerp(this.stretch, 1.3, 0.4)
-        this.squeeze = lerp(this.squeeze, 0.7, 0.4)
-      } else {
-        this.stretch = lerp(this.stretch, 1.1, 0.2)
-        this.squeeze = lerp(this.squeeze, 0.9, 0.2)
-      }
-
-      // reset jumps & gripTime
-      this.jumps = this.jumpsMax
-      this.gripTime = this.gripTimeMax
-
-      // For bot
-      this.onGround = true
-    } else {
-      this.stretch = lerp(this.stretch, 0.8, 0.2)
-      this.squeeze = lerp(this.squeeze, 1.2, 0.2)
-
-      // For bot
-      this.onGround = false
-    }
-
-    // Kill other players
-    const players = entities.filter(e => e.isPlayer && e !== this && !e.remove)
-    for (let player of players) {
-      if (this.willIntersectWith(player, 0, 1)) {
-        // Jump Effect
-        if (!dInp) {
-          this.vy = -this.jmpHght * 0.9
-          this.jumps = 2
-          this.stretch = 0.7
-          this.squeeze = 1.3
-          player.squeeze = 0.7
-          player.stretch = 1.3
-        } else {
-          // Increment kills
-          this.kills++
-
-          // Kill Player
-          player.die(addEntity)
-
-          // Spawn score particle
-          addEntity(new ScoreParticleEntity(this.x, this.y - 10, 0, 0, {colour: this.getColour(), number: this.kills}))
-        }
-      }
-    }
-
-    // Fall out of world
-    if (this.y - this.h > window.size[1]) {
-      this.die(addEntity)
-    }
-
-    // Loop round world
-    if ((!this.isBot && this.y < 650) || (this.isBot && this.y < 550)) {
-      if (this.x > window.size[0]) { this.x = -this.w }
-      if (this.x + this.w < 0) { this.x = window.size[0] }
-    }
-
-    // Push down
-    if (this.y < 0) {
-      this.vy += 1
-    }
-
-    // Update Physics
-    super.update(entities)
-  }
-
-  getColour () {
-    let c = tc(this.colour)
-    if (this.isBot) { c.lighten(20) }
-    return c.toRgbString()
-  }
-
-  draw (ctx) {
-    ctx.fillStyle = this.getColour()
-    let w = this.w * this.stretch
-    let h = this.h * this.squeeze
-    let x = this.x + ((1 - this.stretch) * this.w / 2)
-    let y = this.y + ((1 - this.squeeze) * this.h)
-    ctx.fillRect(x, y, w, h)
-  }
-}
-
-module.exports = PlayerEntity
-
-},{"./physicsEntity":6,"./particleEntity":11,"./scoreParticleEntity":12,"./corpseEntity":13,"./botBrain":14,"tinycolor2":16,"./util":9}],8:[function(require,module,exports) {
-const Entity = require('./entity')
-const PlayerEntity = require('./playerEntity')
-const tc = require('tinycolor2')
-const { lerp } = require('./util')
-
-const interp = x => Math.max(0, (0.5 * x) + Math.pow(1.8 * x - 1, 3))
-
-class BirthEntity extends Entity {
-  constructor (...args) {
-    // Has the same constructor signature
-    super(...args)
-
-    // Get spawn object
-    let opts = args[4]
-    this.spawn = opts.spawn
-
-    // fade out
-    this.alpha = 0
-    this.time = 0
-    this.fadeTime = 80
-
-    // no physics
-    this.ethereal = true
-  }
-
-  update (entities, { addEntity }) {
-    // Keep track of time and calculate alpha
-    this.time++
-    this.alpha = (this.time / this.fadeTime)
-
-    // die when timer up
-    if (this.time >= this.fadeTime) {
-      // Remove in the way
-      entities
-        .filter(e => e instanceof PlayerEntity)
-        .forEach(p => {
-          if (p.willIntersectWith(this, 0, 0)) {
-            p.die(addEntity)
-          }
-        })
-
-      // Remove me and create spawn
-      this.remove = true
-      if (this.spawn) { addEntity(this.spawn) }
-    }
-
-    // Call super
-    super.update(entities)
-  }
-
-  draw (ctx) {
-    // Manipulate colour with alpha
-    let a = interp(this.alpha)
-    let c = tc(this.colour)
-    c.setAlpha(a)
-    ctx.fillStyle = c.toRgbString()
-    let w = lerp(this.w, 0, 1 - a)
-    let h = lerp(this.h, 0, 1 - a)
-    let x = this.x + this.w / 2
-    let y = this.y + this.h / 2
-    ctx.fillRect(x - w / 2, y - h / 2, w, h)
-  }
-}
-
-module.exports = BirthEntity
-
-},{"./entity":10,"./playerEntity":7,"tinycolor2":16,"./util":9}],3:[function(require,module,exports) {
+module.exports = botBrain;
+},{"./util":8}],4:[function(require,module,exports) {
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+var orientationInputRamp = function orientationInputRamp(x) {
+  var s = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 1;
+  return Math.pow(0.6 * x, 6) + Math.abs(x) * Math.sign(x) * s;
+};
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var setup = function setup(_) {
+  // Keyboard
+  window.keys = {};
+  window.orientationInput = {};
+  window.touches = {};
+  window.onkeydown = function (e) {
+    if (e.repeat) {
+      window.keys[e.key] = 1;
+    } else {
+      window.keys[e.key] = 2;
+    }
+  };
+  window.onkeyup = function (e) {
+    window.keys[e.key] = 0;
+    if (e.key === ' ') {
+      e.preventDefault();
+    }
+  };
+  window.ontouchstart = function (e) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+    try {
+      for (var _iterator = e.targetTouches[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var touch = _step.value;
 
-var PhysicsEntity = require('./physicsEntity');
-var PlayerEntity = require('./playerEntity');
-var BirthEntity = require('./birthEntity');
+        var side = touch.clientX < window.innerWidth / 2 ? 'left' : 'right';
+        window.touches[side] = 2;
+        e.preventDefault();
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  };
+  window.ontouchend = function (e) {
+    var _iteratorNormalCompletion2 = true;
+    var _didIteratorError2 = false;
+    var _iteratorError2 = undefined;
 
-var _require = require('./util'),
-    least = _require.least,
-    most = _require.most;
+    try {
+      for (var _iterator2 = e.changedTouches[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+        var touch = _step2.value;
 
-var entities = [];
+        var side = touch.clientX < window.innerWidth / 2 ? 'left' : 'right';
+        window.touches[side] = 0;
+        e.preventDefault();
+      }
+    } catch (err) {
+      _didIteratorError2 = true;
+      _iteratorError2 = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+          _iterator2.return();
+        }
+      } finally {
+        if (_didIteratorError2) {
+          throw _iteratorError2;
+        }
+      }
+    }
+  };
+  window.ondeviceorientation = function (e) {
+    var x = e.beta;
+    var y = e.gamma;
+    var z = e.alpha;
+
+    z = (z - 180) / 180;
+    y = y / 90;
+    x = x / 180;
+
+    var s = 2;
+    x = orientationInputRamp(x, s);
+    y = orientationInputRamp(y, s);
+    z = orientationInputRamp(z, s);
+
+    window.orientationInput['x'] = x;
+    window.orientationInput['y'] = y;
+    window.orientationInput['z'] = z;
+  };
+};
+
+var isDown = function isDown(inputs, name) {
+  var input = inputs[name];
+  var checks = Array.isArray(input) ? input : [input];
+  return checks.map(function (i) {
+    switch (i.type) {
+      case 'keyboard':
+        var r = window.keys[i.key] || 0;
+        if (r > 0) {
+          window.keys[i.key] = 1;
+        }
+        return r > 0;
+      case 'orientation':
+        var o = window.orientationInput[i.index];
+        if (Math.sign(i.sign) === Math.sign(o)) {
+          return Math.abs(o);
+        } else {
+          return 0;
+        }
+      case 'touch':
+        var t = window.touches[i.side] || 0;
+        if (t > 0) {
+          window.touches[i.side] = 1;
+        }
+        return t > 0;
+    }
+  }).find(function (i) {
+    return i !== 0 && i !== false;
+  }) || 0;
+};
+
+var isPressed = function isPressed(inputs, name) {
+  var input = inputs[name];
+  var checks = Array.isArray(input) ? input : [input];
+  return checks.map(function (i) {
+    switch (i.type) {
+      case 'keyboard':
+        var r = window.keys[i.key] || 0;
+        if (r > 0) {
+          window.keys[i.key] = 1;
+        }
+        return r === 2;
+      case 'touch':
+        var t = window.touches[i.side] || 0;
+        if (t > 0) {
+          window.touches[i.side] = 1;
+        }
+        return t === 2;
+    }
+  }).find(function (i) {
+    return i !== 0 && i !== false;
+  }) || 0;
+};
 
 var inputs = [{
-  left: {
+  left: [{
     type: 'keyboard',
     key: 'a'
-  },
-  right: {
+  }, {
+    type: 'orientation',
+    sign: -1,
+    index: 'y'
+  }],
+  right: [{
     type: 'keyboard',
     key: 'd'
-  },
-  jump: {
+  }, {
+    type: 'orientation',
+    sign: 1,
+    index: 'y'
+  }],
+  jump: [{
     type: 'keyboard',
     key: 'w'
-  },
-  slam: {
+  }, {
+    type: 'touch',
+    side: 'left'
+  }],
+  slam: [{
     type: 'keyboard',
     key: 's'
-  }
+  }, {
+    type: 'touch',
+    side: 'right'
+  }]
 }, {
   left: {
     type: 'keyboard',
@@ -2100,6 +2124,466 @@ var inputs = [{
   }
 }];
 
+module.exports = {
+  setup: setup,
+  inputs: inputs,
+  isDown: isDown,
+  isPressed: isPressed
+};
+},{}],7:[function(require,module,exports) {
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var PhysicsEntity = require('./physicsEntity');
+var ParticleEntity = require('./particleEntity');
+var ScoreParticleEntity = require('./scoreParticleEntity');
+var CorpseEntity = require('./corpseEntity');
+var botBrain = require('./botBrain');
+var tc = require('tinycolor2');
+
+var _require = require('./util'),
+    lerp = _require.lerp;
+
+var _require2 = require('./input'),
+    isDown = _require2.isDown,
+    isPressed = _require2.isPressed;
+
+var particleNum = 30;
+
+var PlayerEntity = function (_PhysicsEntity) {
+  _inherits(PlayerEntity, _PhysicsEntity);
+
+  function PlayerEntity(_x, _y, _w, _h) {
+    var opts = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {};
+
+    _classCallCheck(this, PlayerEntity);
+
+    var _this = _possibleConstructorReturn(this, (PlayerEntity.__proto__ || Object.getPrototypeOf(PlayerEntity)).call(this, _x, _y, _w, _h, opts));
+
+    var _inps = opts.inputs,
+        _opts$speed = opts.speed,
+        _hspd = _opts$speed === undefined ? 2.3 : _opts$speed,
+        _opts$jumpHeight = opts.jumpHeight,
+        _jmph = _opts$jumpHeight === undefined ? 14 : _opts$jumpHeight,
+        _opts$slamHeight = opts.slamHeight,
+        _slmh = _opts$slamHeight === undefined ? 3 : _opts$slamHeight,
+        _opts$verticalFrictio = opts.verticalFriction,
+        _vfric = _opts$verticalFrictio === undefined ? 0.01 : _opts$verticalFrictio,
+        _opts$horizontalFrict = opts.horizontalFriction,
+        _hfric = _opts$horizontalFrict === undefined ? 0.2 : _opts$horizontalFrict,
+        _spwnp = opts.spawnPlayer,
+        _n = opts.number,
+        _opts$kills = opts.kills,
+        _klls = _opts$kills === undefined ? 0 : _opts$kills,
+        _opts$isBot = opts.isBot,
+        _isbt = _opts$isBot === undefined ? true : _opts$isBot;
+
+    _this.inputs = _inps;
+    _this.hSpd = _hspd;
+    _this.jmpHght = _jmph;
+    _this.slmHght = _slmh;
+    _this.hFric = _hfric;
+    _this.vFric = _vfric;
+    _this.jumps = 1;
+    _this.jumpsMax = 2;
+    _this.isPlayer = true;
+    _this.spawnPlayer = _spwnp;
+    _this.number = _n;
+    _this.stretch = 1;
+    _this.squeeze = 1;
+    _this.depth = -1;
+    _this.kills = _klls;
+
+    // Bot Stuff
+    _this.timeSinceLastInput = 0;
+    _this.becomeBotTimeout = 450;
+    _this.isBot = _isbt;
+    _this.onGround = false;
+    _this.isStupid = Math.random() < 0.3;
+    _this.bouncy = Math.random() < 0.2;
+    return _this;
+  }
+
+  _createClass(PlayerEntity, [{
+    key: 'die',
+    value: function die(addEntity) {
+      // Remove Player
+      this.remove = true;
+
+      // Spawn Corpse
+      addEntity(new CorpseEntity(this.x, this.y, this.w, this.h, { colour: this.getColour() }));
+
+      // Spawn particles
+      for (var i = 0; i < particleNum; i++) {
+        var x = this.x + this.w / 2;
+        var y = this.y + this.h / 2;
+        var particle = new ParticleEntity(x, y, 7, { colour: this.getColour() });
+        addEntity(particle);
+      }
+
+      // Spawn new player
+      this.spawnPlayer(this.number, { isBot: this.isBot, kills: this.kills });
+    }
+  }, {
+    key: 'getInput',
+    value: function getInput(entities) {
+      var _this2 = this;
+
+      var hInp = +isDown(this.inputs, 'right') - +isDown(this.inputs, 'left');
+      var jInp = isPressed(this.inputs, 'jump');
+      var dInp = isDown(this.inputs, 'slam');
+
+      if (hInp === 0 && !jInp && !dInp) {
+        this.timeSinceLastInput += 1;
+        if (this.timeSinceLastInput > this.becomeBotTimeout) {
+          this.isBot = true;
+          this.timeSinceLastInput = 0;
+        }
+      } else {
+        this.timeSinceLastInput = 0;
+        this.isBot = false;
+      }
+
+      if (!this.isBot) {
+        return {
+          hInp: hInp,
+          jInp: jInp,
+          dInp: dInp
+        };
+      } else {
+        // Get players
+        var players = entities.filter(function (e) {
+          return e.isPlayer && e !== _this2 && !e.remove;
+        });
+
+        // Are there any?
+        if (players.length === 0) {
+          return { hInp: 0, jInp: 0, dInp: 0 };
+        }
+
+        // Use botbrain
+        return botBrain.bind(this)(players);
+      }
+    }
+  }, {
+    key: 'update',
+    value: function update(entities, _ref) {
+      var _this3 = this;
+
+      var addEntity = _ref.addEntity;
+
+      // Get player input
+      var _getInput = this.getInput(entities),
+          hInp = _getInput.hInp,
+          jInp = _getInput.jInp,
+          dInp = _getInput.dInp;
+
+      // Slight Dash
+
+
+      if (Math.sign(this.vx) !== hInp && hInp === 0) {
+        this.vx += hInp * this.hSpd * 2.4;
+      }
+
+      // Horizontal Movement
+      this.vx += hInp * this.hSpd;
+
+      // Apply friction (damping)
+      this.vx = lerp(this.vx, 0, this.hFric);
+      this.vy = lerp(this.vy, 0, this.vFric);
+
+      // Jumping
+      if (this.jumps > 1 && jInp) {
+        if (this.vy > 0) {
+          this.vy = -this.jmpHght * 0.75;
+        } else {
+          if (this.vy === 0) {
+            this.vy -= this.jmpHght;
+          } else {
+            this.vy -= this.jmpHght * 0.7;
+          }
+        }
+        this.jumps--;
+        this.stretch = 0.7;
+        this.squeeze = 1.3;
+      }
+
+      // Reset stretch and squeeze
+      this.stretch = lerp(this.stretch, 1, 0.1);
+      this.squeeze = lerp(this.squeeze, 1, 0.1);
+
+      // Slamming
+      if (dInp) {
+        this.vy += this.slmHght;
+      }
+
+      // Regain jumps & make splats
+      if (this.willIntersect(entities, 0, 1)) {
+        /*
+        // Create Splats
+        let x = this.x + this.w / 2
+        let y = this.y + this.h
+        let splatter = new SplatterEntity(x, y, 0, 0, { colour: this.colour })
+        addEntity(splatter)
+        */
+
+        // Squishing and stuff
+        if (dInp) {
+          this.stretch = lerp(this.stretch, 1.3, 0.4);
+          this.squeeze = lerp(this.squeeze, 0.7, 0.4);
+        } else {
+          this.stretch = lerp(this.stretch, 1.1, 0.2);
+          this.squeeze = lerp(this.squeeze, 0.9, 0.2);
+        }
+
+        // reset jumps & gripTime
+        this.jumps = this.jumpsMax;
+        this.gripTime = this.gripTimeMax;
+
+        // For bot
+        this.onGround = true;
+      } else {
+        this.stretch = lerp(this.stretch, 0.8, 0.2);
+        this.squeeze = lerp(this.squeeze, 1.2, 0.2);
+
+        // For bot
+        this.onGround = false;
+      }
+
+      // Kill other players
+      var players = entities.filter(function (e) {
+        return e.isPlayer && e !== _this3 && !e.remove;
+      });
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = players[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var player = _step.value;
+
+          if (this.willIntersectWith(player, 0, 1)) {
+            // Jump Effect
+            if (!dInp) {
+              this.vy = -this.jmpHght * 0.9;
+              this.jumps = 2;
+              this.stretch = 0.7;
+              this.squeeze = 1.3;
+              player.squeeze = 0.7;
+              player.stretch = 1.3;
+            } else {
+              // Increment kills
+              this.kills++;
+
+              // Kill Player
+              player.die(addEntity);
+
+              // Spawn score particle
+              addEntity(new ScoreParticleEntity(this.x, this.y - 10, 0, 0, { colour: this.getColour(), number: this.kills }));
+            }
+          }
+        }
+
+        // Fall out of world
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      if (this.y - this.h > window.size[1]) {
+        this.die(addEntity);
+      }
+
+      // Loop round world
+      if (!this.isBot && this.y < 650 || this.isBot && this.y < 550) {
+        if (this.x > window.size[0]) {
+          this.x = -this.w;
+        }
+        if (this.x + this.w < 0) {
+          this.x = window.size[0];
+        }
+      }
+
+      // Push down
+      if (this.y < 0) {
+        this.vy += 1;
+      }
+
+      // Update Physics
+      _get(PlayerEntity.prototype.__proto__ || Object.getPrototypeOf(PlayerEntity.prototype), 'update', this).call(this, entities);
+    }
+  }, {
+    key: 'getColour',
+    value: function getColour() {
+      var c = tc(this.colour);
+      if (this.isBot) {
+        c.lighten(20);
+      }
+      return c.toRgbString();
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      ctx.fillStyle = this.getColour();
+      var w = this.w * this.stretch;
+      var h = this.h * this.squeeze;
+      var x = this.x + (1 - this.stretch) * this.w / 2;
+      var y = this.y + (1 - this.squeeze) * this.h;
+      ctx.fillRect(x, y, w, h);
+    }
+  }]);
+
+  return PlayerEntity;
+}(PhysicsEntity);
+
+module.exports = PlayerEntity;
+},{"./physicsEntity":9,"./particleEntity":13,"./scoreParticleEntity":11,"./corpseEntity":12,"./botBrain":14,"tinycolor2":16,"./util":8,"./input":4}],6:[function(require,module,exports) {
+'use strict';
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Entity = require('./entity');
+var PlayerEntity = require('./playerEntity');
+var tc = require('tinycolor2');
+
+var _require = require('./util'),
+    lerp = _require.lerp;
+
+var interp = function interp(x) {
+  return Math.max(0, 0.5 * x + Math.pow(1.8 * x - 1, 3));
+};
+
+var BirthEntity = function (_Entity) {
+  _inherits(BirthEntity, _Entity);
+
+  function BirthEntity() {
+    var _ref;
+
+    _classCallCheck(this, BirthEntity);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    // Get spawn object
+    var _this = _possibleConstructorReturn(this, (_ref = BirthEntity.__proto__ || Object.getPrototypeOf(BirthEntity)).call.apply(_ref, [this].concat(args)));
+    // Has the same constructor signature
+
+
+    var opts = args[4];
+    _this.spawn = opts.spawn;
+
+    // fade out
+    _this.alpha = 0;
+    _this.time = 0;
+    _this.fadeTime = 80;
+
+    // no physics
+    _this.ethereal = true;
+    return _this;
+  }
+
+  _createClass(BirthEntity, [{
+    key: 'update',
+    value: function update(entities, _ref2) {
+      var _this2 = this;
+
+      var addEntity = _ref2.addEntity;
+
+      // Keep track of time and calculate alpha
+      this.time++;
+      this.alpha = this.time / this.fadeTime;
+
+      // die when timer up
+      if (this.time >= this.fadeTime) {
+        // Remove in the way
+        entities.filter(function (e) {
+          return e instanceof PlayerEntity;
+        }).forEach(function (p) {
+          if (p.willIntersectWith(_this2, 0, 0)) {
+            p.die(addEntity);
+          }
+        });
+
+        // Remove me and create spawn
+        this.remove = true;
+        if (this.spawn) {
+          addEntity(this.spawn);
+        }
+      }
+
+      // Call super
+      _get(BirthEntity.prototype.__proto__ || Object.getPrototypeOf(BirthEntity.prototype), 'update', this).call(this, entities);
+    }
+  }, {
+    key: 'draw',
+    value: function draw(ctx) {
+      // Manipulate colour with alpha
+      var a = interp(this.alpha);
+      var c = tc(this.colour);
+      c.setAlpha(a);
+      ctx.fillStyle = c.toRgbString();
+      var w = lerp(this.w, 0, 1 - a);
+      var h = lerp(this.h, 0, 1 - a);
+      var x = this.x + this.w / 2;
+      var y = this.y + this.h / 2;
+      ctx.fillRect(x - w / 2, y - h / 2, w, h);
+    }
+  }]);
+
+  return BirthEntity;
+}(Entity);
+
+module.exports = BirthEntity;
+},{"./entity":10,"./playerEntity":7,"tinycolor2":16,"./util":8}],3:[function(require,module,exports) {
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+var PhysicsEntity = require('./physicsEntity');
+var PlayerEntity = require('./playerEntity');
+var BirthEntity = require('./birthEntity');
+
+var _require = require('./input'),
+    inputs = _require.inputs;
+
+var _require2 = require('./util'),
+    least = _require2.least,
+    most = _require2.most;
+
+var entities = [];
+
 var playerColours = ['#5468fe', '#fe4c55', '#ff9800', '#4caf50'];
 var playerSpawns = [[275, 290], [675, 290], [300, 490], [650, 490], [200, 60], [700, 60]];
 
@@ -2131,9 +2615,9 @@ var spawnPlayer = function spawnPlayer(n, opts) {
 };
 
 spawnPlayer(0);
-spawnPlayer(1);
-spawnPlayer(2);
-spawnPlayer(3);
+// spawnPlayer(1)
+// spawnPlayer(2)
+// spawnPlayer(3)
 
 entities.push(new PhysicsEntity(150, 600, 700, 60, { colour: '#313131', kinematic: true, label: 'obstacle' }));
 entities.push(new PhysicsEntity(200, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }));
@@ -2160,58 +2644,39 @@ var main = function main(ctx) {
 };
 
 module.exports = main;
-},{"./physicsEntity":6,"./playerEntity":7,"./birthEntity":8,"./util":9}],5:[function(require,module,exports) {
-const create = (width, height) => {
-  const canvas = document.createElement('canvas')
-  canvas.width = width
-  canvas.height = height
-  window.document.body.appendChild(canvas)
-  const context = canvas.getContext('2d')
-  return context
-}
+},{"./physicsEntity":9,"./playerEntity":7,"./birthEntity":6,"./input":4,"./util":8}],5:[function(require,module,exports) {
+'use strict';
 
-module.exports = create
+var create = function create(width, height) {
+  var canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  window.document.body.appendChild(canvas);
+  var context = canvas.getContext('2d');
+  return context;
+};
 
-},{}],4:[function(require,module,exports) {
-const setup = _ => {
-  // Keyboard
-  window.keys = {}
-  window.onkeydown = (e) => {
-    if (e.repeat) {
-      window.keys[e.key] = 1
-    } else {
-      window.keys[e.key] = 2
-    }
-  }
-  window.onkeyup = (e) => {
-    window.keys[e.key] = 0
-    if (e.key === ' ') {
-      e.preventDefault()
-    }
-  }
-}
-
-module.exports = setup
-
+module.exports = create;
 },{}],2:[function(require,module,exports) {
-const size = [1000, 800]
-const main = require('./main')
-const context = require('./canvas')(size[0], size[1])
-require('./input')()
-let backgroundColour = '#FFF'
+'use strict';
 
-window.size = size
+var size = [1000, 800];
+var main = require('./main');
+var context = require('./canvas')(size[0], size[1]);
+require('./input').setup();
+var backgroundColour = '#FFF';
 
-const loop = _ => {
-  context.fillStyle = backgroundColour
-  context.fillRect(0, 0, size[0], size[1])
-  main(context)
-  window.requestAnimationFrame(loop)
-}
+window.size = size;
 
-loop()
+var loop = function loop(_) {
+  context.fillStyle = backgroundColour;
+  context.fillRect(0, 0, size[0], size[1]);
+  main(context);
+  window.requestAnimationFrame(loop);
+};
 
-},{"./main":3,"./canvas":5,"./input":4}],17:[function(require,module,exports) {
+loop();
+},{"./main":3,"./canvas":5,"./input":4}],22:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -2231,7 +2696,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '49468' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '49352' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -2332,5 +2797,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[17,2])
+},{}]},{},[22,2])
 //# sourceMappingURL=/dist/47b48e2b997c95a2b35156a24cc21a9f.map
