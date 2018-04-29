@@ -1564,7 +1564,7 @@ var SplatterEntity = function (_Entity) {
 }(Entity);
 
 module.exports = SplatterEntity;
-},{"./entity":10,"tinycolor2":16}],12:[function(require,module,exports) {
+},{"./entity":10,"tinycolor2":16}],11:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1639,7 +1639,7 @@ var ParticleEntity = function (_PhysicsEntity) {
 }(PhysicsEntity);
 
 module.exports = ParticleEntity;
-},{"./physicsEntity":6,"./splatterEntity":15}],11:[function(require,module,exports) {
+},{"./physicsEntity":6,"./splatterEntity":15}],12:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1885,7 +1885,7 @@ function botBrain(players) {
 }
 
 module.exports = botBrain;
-},{"./util":9}],5:[function(require,module,exports) {
+},{"./util":9}],4:[function(require,module,exports) {
 'use strict';
 
 var orientationInputRamp = function orientationInputRamp(x) {
@@ -2456,7 +2456,7 @@ var PlayerEntity = function (_PhysicsEntity) {
 }(PhysicsEntity);
 
 module.exports = PlayerEntity;
-},{"./physicsEntity":6,"./particleEntity":12,"./scoreParticleEntity":11,"./corpseEntity":13,"./botBrain":14,"tinycolor2":16,"./util":9,"./input":5}],8:[function(require,module,exports) {
+},{"./physicsEntity":6,"./particleEntity":11,"./scoreParticleEntity":12,"./corpseEntity":13,"./botBrain":14,"tinycolor2":16,"./util":9,"./input":4}],8:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2644,7 +2644,7 @@ var main = function main(ctx) {
 };
 
 module.exports = main;
-},{"./physicsEntity":6,"./playerEntity":7,"./birthEntity":8,"./input":5,"./util":9}],4:[function(require,module,exports) {
+},{"./physicsEntity":6,"./playerEntity":7,"./birthEntity":8,"./input":4,"./util":9}],5:[function(require,module,exports) {
 'use strict';
 
 var create = function create(width, height) {
@@ -2676,7 +2676,7 @@ var loop = function loop(_) {
 };
 
 loop();
-},{"./main":3,"./canvas":4,"./input":5}],17:[function(require,module,exports) {
+},{"./main":3,"./canvas":5,"./input":4}],17:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -2696,7 +2696,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '51337' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '51415' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
