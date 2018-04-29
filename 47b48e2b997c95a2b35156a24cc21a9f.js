@@ -111,7 +111,7 @@ var Entity = function () {
 }();
 
 module.exports = Entity;
-},{}],8:[function(require,module,exports) {
+},{}],9:[function(require,module,exports) {
 "use strict";
 
 var rectangleObjectsOverlap = function rectangleObjectsOverlap(_ref, _ref2) {
@@ -152,7 +152,7 @@ module.exports = {
   least: least,
   most: most
 };
-},{}],9:[function(require,module,exports) {
+},{}],6:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -286,7 +286,7 @@ var PhysicsEntity = function (_Entity) {
 }(Entity);
 
 module.exports = PhysicsEntity;
-},{"./entity":10,"./util":8}],16:[function(require,module,exports) {
+},{"./entity":10,"./util":9}],16:[function(require,module,exports) {
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -1564,7 +1564,7 @@ var SplatterEntity = function (_Entity) {
 }(Entity);
 
 module.exports = SplatterEntity;
-},{"./entity":10,"tinycolor2":16}],13:[function(require,module,exports) {
+},{"./entity":10,"tinycolor2":16}],12:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1639,7 +1639,7 @@ var ParticleEntity = function (_PhysicsEntity) {
 }(PhysicsEntity);
 
 module.exports = ParticleEntity;
-},{"./physicsEntity":9,"./splatterEntity":15}],11:[function(require,module,exports) {
+},{"./physicsEntity":6,"./splatterEntity":15}],11:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1730,7 +1730,7 @@ var ScoreParticleEntity = function (_Entity) {
 }(Entity);
 
 module.exports = ScoreParticleEntity;
-},{"./entity.js":10}],12:[function(require,module,exports) {
+},{"./entity.js":10}],13:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -1818,7 +1818,7 @@ var CorpseEntity = function (_Entity) {
 }(Entity);
 
 module.exports = CorpseEntity;
-},{"./entity":10,"tinycolor2":16,"./util":8}],14:[function(require,module,exports) {
+},{"./entity":10,"tinycolor2":16,"./util":9}],14:[function(require,module,exports) {
 'use strict';
 
 var _require = require('./util'),
@@ -1885,7 +1885,7 @@ function botBrain(players) {
 }
 
 module.exports = botBrain;
-},{"./util":8}],4:[function(require,module,exports) {
+},{"./util":9}],5:[function(require,module,exports) {
 'use strict';
 
 var orientationInputRamp = function orientationInputRamp(x) {
@@ -2456,7 +2456,7 @@ var PlayerEntity = function (_PhysicsEntity) {
 }(PhysicsEntity);
 
 module.exports = PlayerEntity;
-},{"./physicsEntity":9,"./particleEntity":13,"./scoreParticleEntity":11,"./corpseEntity":12,"./botBrain":14,"tinycolor2":16,"./util":8,"./input":4}],6:[function(require,module,exports) {
+},{"./physicsEntity":6,"./particleEntity":12,"./scoreParticleEntity":11,"./corpseEntity":13,"./botBrain":14,"tinycolor2":16,"./util":9,"./input":5}],8:[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -2562,7 +2562,7 @@ var BirthEntity = function (_Entity) {
 }(Entity);
 
 module.exports = BirthEntity;
-},{"./entity":10,"./playerEntity":7,"tinycolor2":16,"./util":8}],3:[function(require,module,exports) {
+},{"./entity":10,"./playerEntity":7,"tinycolor2":16,"./util":9}],3:[function(require,module,exports) {
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -2615,9 +2615,9 @@ var spawnPlayer = function spawnPlayer(n, opts) {
 };
 
 spawnPlayer(0);
-// spawnPlayer(1)
-// spawnPlayer(2)
-// spawnPlayer(3)
+spawnPlayer(1);
+spawnPlayer(2);
+spawnPlayer(3);
 
 entities.push(new PhysicsEntity(150, 600, 700, 60, { colour: '#313131', kinematic: true, label: 'obstacle' }));
 entities.push(new PhysicsEntity(200, 400, 200, 20, { colour: '#313131', kinematic: true, label: 'obstacle' }));
@@ -2644,7 +2644,7 @@ var main = function main(ctx) {
 };
 
 module.exports = main;
-},{"./physicsEntity":9,"./playerEntity":7,"./birthEntity":6,"./input":4,"./util":8}],5:[function(require,module,exports) {
+},{"./physicsEntity":6,"./playerEntity":7,"./birthEntity":8,"./input":5,"./util":9}],4:[function(require,module,exports) {
 'use strict';
 
 var create = function create(width, height) {
@@ -2676,7 +2676,7 @@ var loop = function loop(_) {
 };
 
 loop();
-},{"./main":3,"./canvas":5,"./input":4}],22:[function(require,module,exports) {
+},{"./main":3,"./canvas":4,"./input":5}],17:[function(require,module,exports) {
 
 var global = (1, eval)('this');
 var OldModule = module.bundle.Module;
@@ -2696,7 +2696,7 @@ module.bundle.Module = Module;
 
 if (!module.bundle.parent && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
-  var ws = new WebSocket('ws://' + hostname + ':' + '49352' + '/');
+  var ws = new WebSocket('ws://' + hostname + ':' + '51337' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
@@ -2797,5 +2797,5 @@ function hmrAccept(bundle, id) {
     return hmrAccept(global.require, id);
   });
 }
-},{}]},{},[22,2])
+},{}]},{},[17,2])
 //# sourceMappingURL=/dist/47b48e2b997c95a2b35156a24cc21a9f.map
