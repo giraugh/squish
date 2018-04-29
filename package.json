@@ -10,10 +10,10 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "gh-pages": "^1.1.0",
-    "parcel": "^0.0.1"
+    "parcel-bundler": "^1.7.1"
   },
   "scripts": {
-    "build": "parcel build index.html --public-url ./",
+    "build": "parcel build ./index.html --public-url ./ --out-dir dist",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   }
