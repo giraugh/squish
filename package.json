@@ -13,6 +13,7 @@
     "parcel-bundler": "^1.7.1"
   },
   "scripts": {
+    "start": "parcel ./index.html",
     "build": "parcel build ./index.html --public-url ./ --out-dir dist",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"

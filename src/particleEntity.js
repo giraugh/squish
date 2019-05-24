@@ -2,6 +2,8 @@ const PhysicsEntity = require('./physicsEntity')
 const SplatterEntity = require('./splatterEntity')
 const force = 25
 
+const clamp = (x, min, max) => Math.max(min, Math.min(x, max))
+
 class ParticleEntity extends PhysicsEntity {
   constructor (_x, _y, _r, opts = {}) {
     super(_x, _y, 0, 0, opts)
@@ -36,7 +38,10 @@ class ParticleEntity extends PhysicsEntity {
   draw (ctx) {
     ctx.fillStyle = this.colour
     ctx.beginPath()
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+    // ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+    let squishAmount = (this.vx ** 2 + this.vy ** 2)
+    let theta = Math.atan2(this.vy, this.vx) + (Math.PI / 2)
+    ctx.ellipse(this.x, this.y, this.radius * clamp((1 / (squishAmount / 5)), 0.5, 0.9), this.radius, theta, 0, Math.PI * 2)
     ctx.fill()
   }
 }

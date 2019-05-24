@@ -39,7 +39,7 @@ class SplatterEntity extends Entity {
 
     // Draw us
     ctx.beginPath()
-    ctx.arc(this.x, this.y, 15, 0, Math.PI * 2)
+    ctx.arc(this.x, this.y, 12, 0, Math.PI * 2)
     ctx.fill()
     // ctx.drawImage(splatterImg, this.x, this.y)
 

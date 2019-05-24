@@ -60,7 +60,7 @@ class PlayerEntity extends PhysicsEntity {
     for (let i = 0; i < particleNum; i++) {
       let x = this.x + this.w / 2
       let y = this.y + this.h / 2
-      let particle = new ParticleEntity(x, y, 7, { colour: this.getColour() })
+      let particle = new ParticleEntity(x, y, 9, { colour: this.getColour() })
       addEntity(particle)
     }
 
