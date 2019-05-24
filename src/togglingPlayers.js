@@ -12,8 +12,6 @@ const initTogglingPlayers = () => {
       el.classList = [...cl.filter(c => c !== 'disabled'), 'enabled'].join(' ')
     }
 
-    console.log(window.entities.filter(e => e.spawn != null && e.fadeTime != null))
-
     // Kill or disable spawning
     if (enabled) {
       // Find player
