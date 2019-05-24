@@ -1,9 +1,11 @@
 const PhysicsEntity = require('./physicsEntity')
 const PlayerEntity = require('./playerEntity')
 const BirthEntity = require('./birthEntity')
+const initTogglingPlayers = require('./togglingPlayers')
 const { inputs } = require('./input')
 const { least, most } = require('./util')
 let entities = []
+window.entities = [] // Kept in sync
 
 const playerColours = ['#5468fe', '#fe4c55', '#ff9800', '#4caf50']
 const playerSpawns = [
@@ -15,7 +17,10 @@ const playerSpawns = [
   [700, 60]
 ]
 
-const spawnPlayer = (n, opts) => {
+// Initialise toggling players
+initTogglingPlayers()
+
+const spawnPlayer = (n, opts, delayRespawn) => {
   const players = entities.filter(e => e.isPlayer || e.label === 'birth')
   let spawn = playerSpawns[Math.round(Math.random() * (playerSpawns.length - 1))]
   if (players.length) {
@@ -25,7 +30,7 @@ const spawnPlayer = (n, opts) => {
   }
   const playerOpts = { number: n, colour: playerColours[n], inputs: inputs[n], spawnPlayer }
   const player = new PlayerEntity(...spawn, 50, 50, {...playerOpts, ...opts})
-  entities.push(new BirthEntity(...spawn, 50, 50, { number: n, colour: player.getColour(), spawn: player, label: 'birth' }))
+  entities.push(new BirthEntity(...spawn, 50, 50, { number: n, colour: player.getColour(), spawn: player, label: 'birth', dontProgressTime: delayRespawn }))
 }
 
 spawnPlayer(0)
@@ -47,6 +52,7 @@ const main = ctx => {
     ent.draw(ctx)
   })
   entities = entities.filter(e => !e.remove)
+  window.entities = entities
 }
 
 module.exports = main

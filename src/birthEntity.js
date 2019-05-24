@@ -18,6 +18,7 @@ class BirthEntity extends Entity {
     this.alpha = 0
     this.time = 0
     this.fadeTime = 80
+    this.dontProgressTime = opts.dontProgressTime || false
 
     // no physics
     this.ethereal = true
@@ -25,7 +26,10 @@ class BirthEntity extends Entity {
 
   update (entities, { addEntity }) {
     // Keep track of time and calculate alpha
-    this.time++
+    if (!this.dontProgressTime) {
+      this.time++
+    }
+
     this.alpha = (this.time / this.fadeTime)
 
     // die when timer up

@@ -2,8 +2,21 @@
   <title> Squish </title>
   <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
-<body></body>
+<body>
+  <div class='players'>
+    <div class='enabled player blue'></div>
+    <div class='enabled player red'></div>
+    <div class='enabled player yellow'></div>
+    <div class='enabled player green'></div>
+  </div>
+</body>
 <style>
+  * {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+
   body {
     overflow: hidden;  
   }
@@ -13,5 +26,43 @@
     margin: 0px;
     margin: auto;
   }
+
+  .players {
+    padding: 10px;
+    display: grid;
+    width: max-content;
+    column-gap: 10px;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+
+  .player {
+    background: black;
+    width: 50px;
+    height: 50px;
+    border: 1px solid white;
+  }
+
+  .player.enabled:hover {
+    cursor: pointer;
+    border: none;
+  }
+
+  .player.disabled {
+    background-color: white;
+  }
+
+  .player.disabled:hover {
+    cursor: pointer;
+    border-width: 3px;
+  }
+
+  .blue {background-color: #5468fe; }
+  .red {background-color: #fe4c55; }
+  .yellow {background-color: #ff9800; }
+  .green {background-color: #4caf50; }
+  .disabled.blue {border: 2px solid #5468fe; }
+  .disabled.red {border: 2px solid #fe4c55; }
+  .disabled.yellow {border: 2px solid #ff9800; }
+  .disabled.green {border: 2px solid #4caf50; }
 </style>
 <script src='src/index.js'></script>

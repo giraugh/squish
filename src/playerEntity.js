@@ -40,6 +40,9 @@ class PlayerEntity extends PhysicsEntity {
     this.depth = -1
     this.kills = _klls
 
+    // Toggling stuff
+    this.doDie = false
+
     // Bot Stuff
     this.timeSinceLastInput = 0
     this.becomeBotTimeout = 450
@@ -49,7 +52,7 @@ class PlayerEntity extends PhysicsEntity {
     this.bouncy = Math.random() < 0.2
   }
 
-  die (addEntity) {
+  die (addEntity, delayRespawn) {
     // Remove Player
     this.remove = true
 
@@ -65,7 +68,7 @@ class PlayerEntity extends PhysicsEntity {
     }
 
     // Spawn new player
-    this.spawnPlayer(this.number, { isBot: this.isBot, kills: this.kills })
+    this.spawnPlayer(this.number, { isBot: this.isBot, kills: this.kills }, delayRespawn)
   }
 
   getInput (entities) {
@@ -149,6 +152,11 @@ class PlayerEntity extends PhysicsEntity {
       this.vy += this.slmHght
     }
 
+    // If toggled off
+    if (this.doDie) {
+      this.die(addEntity, true)
+    }
+
     // Regain jumps & make splats
     if (this.willIntersect(entities, 0, 1)) {
       /*
@@ -199,7 +207,9 @@ class PlayerEntity extends PhysicsEntity {
           this.kills++
 
           // Kill Player
-          player.die(addEntity)
+          if (!this.doDie /* DONT DIE TWICE */) {
+            player.die(addEntity)
+          }
 
           // Spawn score particle
           addEntity(new ScoreParticleEntity(this.x, this.y - 10, 0, 0, {colour: this.getColour(), number: this.kills}))
